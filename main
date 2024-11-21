@@ -1,0 +1,64 @@
+# Setting Up Apache2 and Displaying Server Information
+
+# Description:
+# This README provides a step-by-step guide to install and configure Apache2 on an Ubuntu system. 
+# It also includes instructions to create a Bash script that generates an `index.html` file displaying 
+# the server's hostname and IP address.
+
+# Requirements:
+# - Ubuntu operating system
+# - Basic knowledge of Bash scripting
+# - Sudo privileges on the system
+
+# Instructions:
+
+# Step 1: Update and Install Apache2
+# Update the system package lists and install Apache2 using the following commands:
+sudo apt update
+sudo apt install -y apache2
+
+# Step 2: Create a Script to Generate `index.html`
+# Create a Bash script called `generate_index.sh` that will automate the generation of an `index.html` file.
+cat <<'EOF' > generate_index.sh
+#!/bin/bash
+
+# Fetch the server's hostname and IP address
+# HOSTNAME stores the server's hostname
+HOSTNAME=$(hostname)
+
+# IP_ADDRESS stores the first IP address of the server
+IP_ADDRESS=$(hostname -I | awk '{print $1}')
+
+# Create the HTML content for index.html
+cat <<HTML > /var/www/html/index.html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Server Information</title>
+</head>
+<body>
+    <h1>Server Information</h1>
+    <p><strong>Hostname:</strong> $HOSTNAME</p>
+    <p><strong>IP Address:</strong> $IP_ADDRESS</p>
+</body>
+</html>
+HTML
+EOF
+
+# Step 3: Execute the Script and Restart Apache2
+# Make the script executable and run it to generate the `index.html` file.
+chmod +x generate_index.sh
+sudo ./generate_index.sh
+
+# Restart the Apache2 service to serve the updated `index.html` file.
+sudo systemctl restart apache2
+
+# Step 4: Monitor Apache Logs
+# Use the following command to view incoming requests in real time:
+sudo tail -f /var/log/apache2/access.log
+
+# Output:
+# - The `index.html` file will display the server's hostname and IP address when accessed via a browser.
+# - Example:
+#   Hostname: example-server
+#   IP Address: 192.168.1.100
